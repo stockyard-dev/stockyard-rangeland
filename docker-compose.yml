@@ -1,0 +1,23 @@
+services:
+  rangeland:
+    image: ghcr.io/stockyard-dev/stockyard-rangeland:latest
+    ports:
+      - "8840:8840"
+    environment:
+      - PORT=${STOCKYARD_PORT:-8840}
+      - DATA_DIR=${STOCKYARD_DATA_DIR:-/data}
+      - RETENTION_DAYS=${STOCKYARD_RETENTION_DAYS:-30}
+      - RANGELAND_LICENSE_KEY=${STOCKYARD_RANGELAND_LICENSE_KEY:-}
+    volumes:
+      - rangeland-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8840/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  rangeland-data:
+    driver: local
